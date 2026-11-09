@@ -8,7 +8,7 @@ function ProductCard({ product, onAdd, featured }) {
       <img src={product.image} alt={product.name} />
       <h3>{product.name}</h3>
       <p className="price">{product.price} тг</p>
-      <button onClick={() => onAdd(product)}>В корзину</button>
+      <button onClick={() => {}}>В корзину</button>
     </article>
   );
 }
