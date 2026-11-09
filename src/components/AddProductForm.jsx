@@ -28,10 +28,14 @@ export default function AddProductForm({ onAdded }) {
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
       <h3>Новый товар</h3>
-      <input name="name" placeholder="Название" required />
-      <input name="category" placeholder="Категория" />
-      <input name="price" type="number" min="0" placeholder="Цена, ₸" required />
-      <input name="unit" placeholder="Единица (кг, л)" defaultValue="кг" />
+      <label className="sr-only" htmlFor="product-name">Название</label>
+      <input id="product-name" name="name" placeholder="Название" required />
+      <label className="sr-only" htmlFor="product-category">Категория</label>
+      <input id="product-category" name="category" placeholder="Категория" />
+      <label className="sr-only" htmlFor="product-price">Цена, ₸</label>
+      <input id="product-price" name="price" type="number" min="0" placeholder="Цена, ₸" required />
+      <label className="sr-only" htmlFor="product-unit">Единица измерения</label>
+      <input id="product-unit" name="unit" placeholder="Единица (кг, л)" defaultValue="кг" />
       {error && <p className="error">{error}</p>}
       <button type="submit">Добавить</button>
     </form>

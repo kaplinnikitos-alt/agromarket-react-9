@@ -106,6 +106,7 @@ function App() {
             <h2>Каталог</h2>
             <input
               type="search"
+              aria-label="Поиск товара"
               placeholder="Поиск товара..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -146,6 +147,12 @@ function App() {
             </p>
           )}
           {error && <p className="error">{error}</p>}
+
+          {!loading && !error && filteredProducts.length === 0 && (
+            <p className="status">
+              {products.length === 0 ? 'Товаров пока нет' : 'Ничего не найдено'}
+            </p>
+          )}
 
           {!loading && !error && (
             <div className="product-grid">
