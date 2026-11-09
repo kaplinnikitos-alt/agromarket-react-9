@@ -1,0 +1,28 @@
+name: E2E (production)
+
+on:
+  workflow_dispatch:           # кнопка Run workflow
+  schedule:
+    - cron: '0 4 * * *'        # ежедневно 04:00 UTC (09:00 в Астане)
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+        env:
+          # Settings → Secrets and variables → Actions → Variables
+          E2E_BASE_URL: ${{ vars.PRODUCTION_URL }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
