@@ -32,10 +32,19 @@ export default function LoginForm({ onLogin }) {
     <form className="login-form" onSubmit={handleSubmit}>
       <h3>{isLogin ? 'Вход' : 'Регистрация'}</h3>
 
-      {!isLogin && <input name="name" placeholder="Имя" required />}
-      <input name="email" type="email" placeholder="Email" required />
-      <input name="password" type="password" placeholder="Пароль (от 8 символов)"
-             required minLength={8} />
+      {/* label связан с полем через htmlFor/id: так поле находят и экранные дикторы, и тесты.
+          Визуально подпись скрыта (sr-only) — на экране остаётся placeholder */}
+      {!isLogin && (
+        <>
+          <label className="sr-only" htmlFor="auth-name">Имя</label>
+          <input id="auth-name" name="name" placeholder="Имя" required />
+        </>
+      )}
+      <label className="sr-only" htmlFor="auth-email">Email</label>
+      <input id="auth-email" name="email" type="email" placeholder="Email" required />
+      <label className="sr-only" htmlFor="auth-password">Пароль</label>
+      <input id="auth-password" name="password" type="password"
+             placeholder="Пароль (от 8 символов)" required minLength={8} />
 
       {error && <p className="error">{error}</p>}
 
