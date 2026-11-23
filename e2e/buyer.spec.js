@@ -7,14 +7,14 @@ const password = 'E2e-Test-Password-123';
 const authBar = (page) => page.locator('.auth-bar');
 
 test.describe('каталог и навигация (гость)', () => {
-  test('каталог загружается с сервера', async ({ page }) => {
+  test('@smoke каталог загружается с сервера', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/АгроМаркет/i);
     await expect(page.getByTestId('product-card').first()).toBeVisible();
     await expect(page.getByText('Загрузка...')).toBeHidden();
   });
 
-  test('прямая ссылка на внутреннюю страницу не даёт 404 (rewrites из vercel.json)', async ({ page }) => {
+  test('@smoke прямая ссылка на внутреннюю страницу не даёт 404 (rewrites из vercel.json)', async ({ page }) => {
     for (const path of ['/login', '/admin']) {
       const response = await page.goto(path);
       expect(response.status(), path).toBe(200);
