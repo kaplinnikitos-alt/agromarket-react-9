@@ -53,6 +53,27 @@ describe('apiFetch', () => {
     await expect(apiFetch('/products', { method: 'POST' })).rejects.toThrow('Поле name обязательно');
   });
 
+  test('ошибка валидации: в сообщении причины, в error.details — поля', async () => {
+    mockApi({
+      'POST /products': reply(400, {
+        error: 'Ошибка валидации',
+        details: [{ field: 'price', message: 'Цена должна быть больше 0' }],
+      }),
+    });
+
+    const err = await apiFetch('/products', { method: 'POST' }).catch((e) => e);
+
+    expect(err.message).toBe('Ошибка валидации: Цена должна быть больше 0');
+    expect(err.status).toBe(400);
+    expect(err.details).toEqual([{ field: 'price', message: 'Цена должна быть больше 0' }]);
+  });
+
+  test('429: показывается текст сервера, а не «что-то пошло не так»', async () => {
+    mockApi({ 'POST /auth/login': reply(429, { error: 'Слишком много попыток. Попробуйте через 15 минут' }) });
+
+    await expect(apiFetch('/auth/login', { method: 'POST' })).rejects.toThrow('Попробуйте через 15 минут');
+  });
+
   test('если в ответе нет поля error, сообщение — «Ошибка <статус>»', async () => {
     mockApi({ 'GET /x': reply(500, {}) });
 
