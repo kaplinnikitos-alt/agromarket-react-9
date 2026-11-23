@@ -151,4 +151,24 @@ describe('LoginForm — регистрация', () => {
 
     expect(await screen.findByText('Пользователь с таким email уже есть')).toBeInTheDocument();
   });
+
+  test('ошибка валидации (400 + details): показывает причины от сервера', async () => {
+    const user = userEvent.setup();
+    mockApi({
+      'POST /auth/register': reply(400, {
+        error: 'Ошибка валидации',
+        details: [{ field: 'email', message: 'Некорректный e-mail' }],
+      }),
+    });
+    render(<LoginForm onLogin={vi.fn()} />);
+
+    await user.click(screen.getByRole('button', { name: /нет аккаунта/i }));
+    await user.type(screen.getByLabelText('Имя'), 'Борис');
+    await user.type(screen.getByLabelText(/email/i), 'boris@agromarket.kz');
+    await user.type(screen.getByLabelText(/пароль/i), 'secret123');
+    await user.click(screen.getByRole('button', { name: 'Зарегистрироваться' }));
+
+    expect(await screen.findByText('Ошибка валидации')).toBeInTheDocument();
+    expect(screen.getByText('Некорректный e-mail')).toBeInTheDocument();
+  });
 });

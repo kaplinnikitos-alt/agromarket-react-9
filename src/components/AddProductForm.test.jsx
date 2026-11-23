@@ -82,6 +82,30 @@ describe('AddProductForm (запросы с токеном)', () => {
     expect(screen.getByLabelText('Название')).toHaveValue('Сметана');
   });
 
+  test('ошибка валидации (400 + details): показывает список причин от сервера', async () => {
+    localStorage.setItem('token', 'admin-token');
+    const user = userEvent.setup();
+    mockApi({
+      'POST /products': reply(400, {
+        error: 'Ошибка валидации',
+        details: [
+          { field: 'price', message: 'Цена должна быть больше 0' },
+          { field: 'name', message: 'Название — минимум 2 символа' },
+        ],
+      }),
+    });
+    const onAdded = vi.fn();
+    render(<AddProductForm onAdded={onAdded} />);
+
+    await fillForm(user);
+    await user.click(screen.getByRole('button', { name: 'Добавить' }));
+
+    expect(await screen.findByText('Ошибка валидации')).toBeInTheDocument();
+    expect(screen.getByText('Цена должна быть больше 0')).toBeInTheDocument();
+    expect(screen.getByText('Название — минимум 2 символа')).toBeInTheDocument();
+    expect(onAdded).not.toHaveBeenCalled();
+  });
+
   test('с пустым названием и ценой форма не отправляется', async () => {
     const user = userEvent.setup();
     const spy = mockApi({});
