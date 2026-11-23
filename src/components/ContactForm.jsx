@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { API_URL } from '../api.js';
+import { API_URL, formatApiError } from '../api.js';
 
 function ContactForm() {
   const [sending, setSending] = useState(false);
@@ -21,7 +21,7 @@ function ContactForm() {
       const result = await res.json();
 
       if (!res.ok) { // статус не 2xx (например, 400)
-        alert('Ошибка: ' + result.error);
+        alert('Ошибка: ' + formatApiError(result, res.status));
         return;
       }
 

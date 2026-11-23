@@ -4,11 +4,13 @@ import { apiFetch } from '../api.js';
 export default function LoginForm({ onLogin }) {
   const [mode, setMode] = useState('login');     // 'login' или 'register'
   const [error, setError] = useState('');
+  const [details, setDetails] = useState([]); // ошибки по полям из ответа сервера (zod)
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    setDetails([]);
     setLoading(true);
     const data = Object.fromEntries(new FormData(e.target));
 
@@ -20,7 +22,9 @@ export default function LoginForm({ onLogin }) {
       });
       onLogin(result.user, result.token);
     } catch (err) {
-      setError(err.message);
+      // 400: список причин, 429: текст «Слишком много попыток…» — берём из ответа сервера
+      setError(err.details?.length ? 'Ошибка валидации' : err.message);
+      setDetails(err.details || []);
     } finally {
       setLoading(false);
     }
@@ -47,6 +51,11 @@ export default function LoginForm({ onLogin }) {
              placeholder="Пароль (от 8 символов)" required minLength={8} />
 
       {error && <p className="error">{error}</p>}
+      {details.length > 0 && (
+        <ul className="error">
+          {details.map((d) => <li key={d.field + d.message}>{d.message}</li>)}
+        </ul>
+      )}
 
       <button type="submit" disabled={loading}>
         {loading ? 'Подождите…' : isLogin ? 'Войти' : 'Зарегистрироваться'}

@@ -3,10 +3,12 @@ import { apiFetch } from '../api.js';
 
 export default function AddProductForm({ onAdded }) {
   const [error, setError] = useState('');
+  const [details, setDetails] = useState([]); // ошибки по полям из ответа сервера (zod)
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    setDetails([]);
     const form = e.target;
     const data = Object.fromEntries(new FormData(form));
 
@@ -21,7 +23,9 @@ export default function AddProductForm({ onAdded }) {
       onAdded(product); // сообщаем App о новом товаре
       form.reset();
     } catch (err) {
-      setError(err.message);
+      // при ошибке валидации показываем заголовок и список причин по полям
+      setError(err.details?.length ? 'Ошибка валидации' : err.message);
+      setDetails(err.details || []);
     }
   }
 
@@ -37,6 +41,11 @@ export default function AddProductForm({ onAdded }) {
       <label className="sr-only" htmlFor="product-unit">Единица измерения</label>
       <input id="product-unit" name="unit" placeholder="Единица (кг, л)" defaultValue="кг" />
       {error && <p className="error">{error}</p>}
+      {details.length > 0 && (
+        <ul className="error">
+          {details.map((d) => <li key={d.field + d.message}>{d.message}</li>)}
+        </ul>
+      )}
       <button type="submit">Добавить</button>
     </form>
   );
