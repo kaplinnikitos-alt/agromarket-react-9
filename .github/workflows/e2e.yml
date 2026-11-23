@@ -16,7 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test
+      - run: npx playwright test --grep @smoke   # на продакшене только чтение
         env:
           # Settings → Secrets and variables → Actions → Variables
           E2E_BASE_URL: ${{ vars.PRODUCTION_URL }}
